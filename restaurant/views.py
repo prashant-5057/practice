@@ -90,6 +90,17 @@ class RestaurantDetailApi(generics.RetrieveAPIView):
             return Response({'error': {"restaurant_id": ["Please provide valid restaurant id."]}}, status=400)
 
 
+class Restaurant2DetailApi(generics.RetrieveAPIView):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            return super().retrieve(request, *args, **kwargs)
+        except Http404:
+            return Response({'error': {"restaurant_id": ["Please provide valid restaurant id."]}}, status=400)
+
+
 class FavouriteMenuItemApi(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = MenuItemSerlizers
