@@ -132,6 +132,23 @@ class FavouriteRestaurantApi(generics.ListAPIView):
         return Restaurant.objects.filter(id__in=favourite_restaurant_ids)
 
 
+class FavouriteRestaurantApi3(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RestaurantSerializer
+
+    def get_queryset(self):
+        favourite_restaurant_ids = self.request.user.favourite_restaurants.all().values_list('id',
+                                                                                             flat=True)
+        return Restaurant.objects.filter(id__in=favourite_restaurant_ids)
+
+class FavouriteRestaurantApi4(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RestaurantSerializer
+
+    def get_queryset(self):
+        favourite_restaurant_ids = self.request.user.favourite_restaurants.all().values_list('id',
+                                                                                             flat=True)
+        return Restaurant.objects.filter(id__in=favourite_restaurant_ids)
 class FavouriteAddRemoveApi(APIView):
     permission_classes = [IsAuthenticated]
 
