@@ -111,6 +111,16 @@ class FavouriteMenuItemApi(generics.ListAPIView):
 
         return MenuItem.objects.filter(id__in=favourite_menu_items_ids)
 
+class FavouriteMenu2ItemApi(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MenuItemSerlizers
+
+    def get_queryset(self):
+        favourite_menu_items_ids = self.request.user.favourite_menu_items.all().values_list('id',
+                                                                                            flat=True)
+
+        return MenuItem.objects.filter(id__in=favourite_menu_items_ids)
+
 
 class FavouriteRestaurantApi(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
