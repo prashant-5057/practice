@@ -1,0 +1,78 @@
+{% extends "admin/change_form.html" %}
+{% load mapbox_location_field_tags %}
+{% location_field_includes %}
+{% include_jquery %}
+
+{% load static %} {% block extrahead %}
+{% load mapbox_location_field_tags %}
+{% location_field_includes %}
+{% include_jquery %}
+{{ block.super }}
+<script src="https://code.jquery.com/jquery-2.2.3.js" integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4="
+    crossorigin="anonymous"></script>
+<script type="text/javascript">
+    (function ($) {
+        $(document).on("google_point_map_widget:marker_create", function (e, locationInputElem, lng, lat, mapWrapID) {
+            $(mapWrapID).parent().parent().parent().find('div.field-latitude').find('input').val(lat)
+            $(mapWrapID).parent().parent().parent().find('div.field-longitude').find('input').val(lng)
+            setTimeout(function () {
+                restaurant_address = $(mapWrapID).find('div.mw-adress-input-wrap').find('input').val()
+                $(mapWrapID).parent().parent().parent().find('div.field-address').find('textarea').val(restaurant_address)
+            }, 1000);
+        });
+
+        $(document).on("google_point_map_widget:marker_change", function (e, locationInputElem, lng, lat, mapWrapID) {
+            $(mapWrapID).parent().parent().parent().find('div.field-latitude').find('input').val(lat)
+            $(mapWrapID).parent().parent().parent().find('div.field-longitude').find('input').val(lng)
+            setTimeout(function () {
+                restaurant_address = $(mapWrapID).find('div.mw-adress-input-wrap').find('input').val()
+                $(mapWrapID).parent().parent().parent().find('div.field-address').find('textarea').val(restaurant_address)
+            }, 1000);
+        });
+        $(document).on("google_point_map_widget:marker_delete", function (e, lng, lat, locationInputElem, mapWrapID) {
+            $(locationInputElem).parent().parent().parent().find('div.field-latitude').find('input').val('')
+            $(locationInputElem).parent().parent().parent().find('div.field-longitude').find('input').val('')
+            $(locationInputElem).parent().parent().parent().find('div.field-address').find('textarea').val('')
+        });
+    })(django.jQuery);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on('click', ".mapboxgl-map", function () {
+            let location = $('[name="location"]').val().split(",");
+            $("[name='longitude']").val(location[0])
+            $("[name='latitude']").val(location[1])
+            SetAddress()
+        });
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        const SetAddress = async () => {
+            val = $("[name='hidden_address']").val()
+            if (val) {
+                $("[name='address']").val($("[name='hidden_address']").val())
+            } else {
+                await delay(1000);
+                $("[name='address']").val($("[name='hidden_address']").val())
+            }
+
+        };
+
+
+        if (window.location.href.indexOf("restaurantaddexcel") > -1) {
+            $('input[name="_save"]').val('Upload')
+            $('input[name="_continue"]').hide();
+        }
+        if (window.location.href.indexOf("restaurant/restaurant") > -1) {
+            // Add new tr with checkbox above first tr in menu-item table.
+            $('<tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="delete"><input type="checkbox" name="delete_all_menu_items" id="id_delete_all_menu_items"></td></tr> ')
+                .insertBefore('#menuitem_set-0')
+
+            // Check all checkboxes by checking first checkbox to delete all menu-items.
+            $(document).on('click', '#id_delete_all_menu_items', function () {
+                $('input:checkbox').not(this).prop('checked', this.checked);
+
+            });
+        }
+
+    });
+</script>
+{% endblock %}
