@@ -31,9 +31,6 @@ class RestaurantApi(generics.ListAPIView):
                 Case(When(name=request.GET["search"], then=0), default=1),
                 'name',
             )
-            print('-------'*20)
-            print(restaurants)
-            print('-------'*20)
             return Response(RestaurantSerializer(restaurants, many=True).data)
         if "latitude" in request.GET and "longitude" in request.GET:
             if float(request.GET["latitude"]) > 0 and float(request.GET["longitude"]) > 0:
